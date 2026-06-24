@@ -35,8 +35,13 @@ func main() {
 	mux.HandleFunc("GET /", handleIndex)
 	mux.HandleFunc("POST /recommend", handleRecommend)
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	server := &http.Server{
-		Addr:         ":8080",
+		Addr:         ":" + port,
 		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -47,7 +52,7 @@ func main() {
 	defer stop()
 
 	go func() {
-		log.Printf("PC Builder running at http://localhost%s", server.Addr)
+		log.Printf("PC Builder running on port %s", port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %v", err)
 		}
