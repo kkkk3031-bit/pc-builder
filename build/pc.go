@@ -2,6 +2,8 @@ package build
 
 import "math"
 
+var maxBudget = 1_000_000.0
+
 type Build struct {
 	Budget       float64
 	Total        float64
@@ -24,30 +26,27 @@ type Tier struct {
 }
 
 var tiers = []Tier{
-	{300, "Budget", "AMD Ryzen 3 4100", "GTX 1650", "8GB DDR4 3200MHz", "256GB NVMe SSD", 350},
-	{500, "Mid-Range", "Intel i5-12400F", "RTX 3060 12GB", "16GB DDR4 3200MHz", "512GB NVMe SSD", 650},
-	{800, "High Performance", "AMD Ryzen 5 7600", "RTX 4060 Ti 8GB", "16GB DDR5 5600MHz", "1TB NVMe SSD", 950},
-	{1200, "Enthusiast", "Intel i7-13700KF", "RTX 4070 12GB", "32GB DDR5 6000MHz", "2TB NVMe SSD", 1450},
-	{1800, "Extreme", "AMD Ryzen 9 7900X", "RTX 4080 Super 16GB", "32GB DDR5 6000MHz", "2TB NVMe SSD", 1950},
-	{2500, "Ultimate", "Intel i9-14900K", "RTX 4090 24GB", "64GB DDR5 6400MHz", "4TB NVMe SSD Gen5", 3200},
-	{4000, "God Tier", "AMD Threadripper 7960X", "RTX 5090 32GB", "128GB DDR5 6400MHz", "8TB NVMe SSD Gen5", 5500},
+	{MinBudget: 300, Category: "Budget", CPU: "AMD Ryzen 3 4100", GPU: "GTX 1650", RAM: "8GB DDR4 3200MHz", Storage: "256GB NVMe SSD", Total: 350},
+	{MinBudget: 500, Category: "Mid-Range", CPU: "Intel i5-12400F", GPU: "RTX 3060 12GB", RAM: "16GB DDR4 3200MHz", Storage: "512GB NVMe SSD", Total: 650},
+	{MinBudget: 800, Category: "High Performance", CPU: "AMD Ryzen 5 7600", GPU: "RTX 4060 Ti 8GB", RAM: "16GB DDR5 5600MHz", Storage: "1TB NVMe SSD", Total: 950},
+	{MinBudget: 1200, Category: "Enthusiast", CPU: "Intel i7-13700KF", GPU: "RTX 4070 12GB", RAM: "32GB DDR5 6000MHz", Storage: "2TB NVMe SSD", Total: 1450},
+	{MinBudget: 1800, Category: "Extreme", CPU: "AMD Ryzen 9 7900X", GPU: "RTX 4080 Super 16GB", RAM: "32GB DDR5 6000MHz", Storage: "2TB NVMe SSD", Total: 1950},
+	{MinBudget: 2500, Category: "Ultimate", CPU: "Intel i9-14900K", GPU: "RTX 4090 24GB", RAM: "64GB DDR5 6400MHz", Storage: "4TB NVMe SSD Gen5", Total: 3200},
+	{MinBudget: 4000, Category: "God Tier", CPU: "AMD Threadripper 7960X", GPU: "RTX 5090 32GB", RAM: "128GB DDR5 6400MHz", Storage: "8TB NVMe SSD Gen5", Total: 5500},
 }
 
 func Recommend(budget float64) Build {
-	if budget <= 0 {
-		return Build{ErrorMessage: "Please enter a valid budget amount."}
-	}
-
 	budget = math.Floor(budget)
 
-	var best Tier
-	for _, t := range tiers {
-		if budget >= t.MinBudget {
-			best = t
-		}
+	if budget <= 0 {
+		return Build{ErrorMessage: "Please enter a valid budget amount greater than $0."}
+	}
+	if budget > maxBudget {
+		return Build{ErrorMessage: "Budget is too large. Maximum supported is $1,000,000."}
 	}
 
-	if best.Total == 0 {
+	best, ok := findTier(budget)
+	if !ok {
 		return Build{
 			Budget:       budget,
 			ErrorMessage: "Budget too low. Minimum ~$300 recommended for a basic PC.",
@@ -63,4 +62,13 @@ func Recommend(budget float64) Build {
 		Storage:  best.Storage,
 		Category: best.Category,
 	}
+}
+
+func findTier(budget float64) (Tier, bool) {
+	for i := len(tiers) - 1; i >= 0; i-- {
+		if budget >= tiers[i].MinBudget {
+			return tiers[i], true
+		}
+	}
+	return Tier{}, false
 }

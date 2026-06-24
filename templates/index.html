@@ -66,13 +66,13 @@
     {{else if .Result.Category}}
       <div class="card">
         <div class="category">{{.Result.Category}}</div>
-        <div class="budget-info">Budget: <strong>${{.Result.Budget}}</strong> &nbsp;|&nbsp; Estimated total: <strong>${{.Result.Total}}</strong></div>
+        <div class="budget-info">Budget: <strong>{{dollar .Result.Budget}}</strong> &nbsp;|&nbsp; Estimated total: <strong>{{dollar .Result.Total}}</strong></div>
         <table>
           <tr><td>CPU</td><td>{{.Result.CPU}}</td></tr>
           <tr><td>GPU</td><td>{{.Result.GPU}}</td></tr>
           <tr><td>RAM</td><td>{{.Result.RAM}}</td></tr>
           <tr><td>Storage</td><td>{{.Result.Storage}}</td></tr>
-          <tr class="total"><td>Estimated Total</td><td>${{.Result.Total}}</td></tr>
+          <tr class="total"><td>Estimated Total</td><td>{{dollar .Result.Total}}</td></tr>
         </table>
       </div>
     {{else}}
