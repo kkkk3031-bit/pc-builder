@@ -3,83 +3,299 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PC Builder — Best Build for Your Budget</title>
+  <title>PC Builder — Smart Build for Your Budget</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f172a; color: #e2e8f0; min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1040 50%, #0a1628 100%);
+      color: #e2e8f0; min-height: 100vh;
       display: flex; flex-direction: column; align-items: center;
       padding: 2rem 1rem;
+      position: relative; overflow-x: hidden;
     }
-    .container { max-width: 640px; width: 100%; }
-    h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; text-align: center; }
-    .sub { color: #94a3b8; text-align: center; margin-bottom: 2rem; font-size: .95rem; }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,.12) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(139,92,246,.1) 0%, transparent 50%),
+                  radial-gradient(ellipse at 50% 80%, rgba(59,130,246,.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .container { max-width: 700px; width: 100%; position: relative; z-index: 1; }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    .logo {
+      display: inline-flex; align-items: center; gap: .75rem;
+      font-size: 2.25rem; font-weight: 800; letter-spacing: -.03em;
+      background: linear-gradient(135deg, #818cf8, #c084fc, #60a5fa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: .5rem;
+    }
+    .logo-icon { font-size: 2rem; -webkit-text-fill-color: initial; }
+    .subtitle { color: #94a3b8; font-size: 1.05rem; font-weight: 400; }
+    .subtitle strong { color: #c084fc; font-weight: 600; }
+
+    .card {
+      background: rgba(30,41,59,.6); backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(148,163,184,.12);
+      border-radius: 20px; padding: 1.75rem;
+      transition: all .3s ease;
+    }
+    .card:hover { border-color: rgba(148,163,184,.2); }
+
     form {
-      background: #1e293b; border-radius: 12px; padding: 1.5rem;
-      display: flex; gap: .75rem; margin-bottom: 2rem;
+      display: flex; gap: .75rem; margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .input-wrap {
+      flex: 1; position: relative; min-width: 200px;
+    }
+    .input-wrap .dollar-sign {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      color: #64748b; font-size: 1.1rem; font-weight: 600; pointer-events: none;
+      z-index: 2;
     }
     form input {
-      flex: 1; padding: .8rem 1rem; border-radius: 8px; border: 1px solid #334155;
-      background: #0f172a; color: #e2e8f0; font-size: 1.1rem;
+      width: 100%; padding: .9rem 1rem .9rem 2rem;
+      border-radius: 12px; border: 1px solid rgba(148,163,184,.15);
+      background: rgba(15,23,42,.6); color: #e2e8f0;
+      font-size: 1.1rem; font-family: 'Inter', sans-serif;
+      transition: all .25s ease; outline: none;
     }
-    form input:focus { outline: none; border-color: #3b82f6; }
+    form input:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,.15); }
+    form input::placeholder { color: #475569; }
     form button {
-      padding: .8rem 1.5rem; border-radius: 8px; border: none; cursor: pointer;
-      background: #3b82f6; color: #fff; font-size: 1rem; font-weight: 600;
-      transition: background .15s; white-space: nowrap;
+      padding: .9rem 1.75rem; border-radius: 12px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      color: #fff; font-size: 1rem; font-weight: 600; font-family: 'Inter', sans-serif;
+      transition: all .25s ease; white-space: nowrap;
+      position: relative; overflow: hidden;
     }
-    form button:hover { background: #2563eb; }
-    .card {
-      background: #1e293b; border-radius: 12px; padding: 1.5rem;
-      border: 1px solid #334155;
+    form button:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(99,102,241,.35); }
+    form button:active { transform: translateY(0); }
+    form button::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,.1) 100%);
+      pointer-events: none;
     }
-    .error { color: #f87171; text-align: center; padding: 1rem; }
-    .category {
-      display: inline-block; background: #3b82f6; color: #fff;
-      padding: .25rem .75rem; border-radius: 999px; font-size: .8rem;
-      font-weight: 600; margin-bottom: 1rem;
+
+    .chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; justify-content: center; }
+    .chip {
+      padding: .4rem 1rem; border-radius: 999px; border: 1px solid rgba(148,163,184,.12);
+      background: rgba(30,41,59,.4); color: #94a3b8; font-size: .85rem;
+      cursor: pointer; transition: all .2s ease; font-family: 'Inter', sans-serif;
+      -webkit-text-fill-color: #94a3b8;
     }
-    .budget-info { margin-bottom: 1rem; color: #94a3b8; }
-    .budget-info strong { color: #e2e8f0; }
-    table { width: 100%; border-collapse: collapse; }
-    td { padding: .6rem 0; border-bottom: 1px solid #334155; }
-    td:last-child { text-align: right; color: #94a3b8; }
-    tr:last-child td { border-bottom: none; }
-    .total td { font-size: 1.1rem; font-weight: 700; border-top: 2px solid #3b82f6; border-bottom: none; padding-top: .8rem; }
-    .total td:last-child { color: #22d3ee; }
-    .hint { text-align: center; color: #64748b; margin-top: .8rem; font-size: .85rem; }
+    .chip:hover { border-color: #818cf8; color: #e2e8f0; -webkit-text-fill-color: #e2e8f0; background: rgba(129,140,248,.1); }
+
+    .result-card { animation: fadeUp .5s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .35rem .9rem .35rem .75rem; border-radius: 999px;
+      font-size: .8rem; font-weight: 700; letter-spacing: .02em;
+      margin-bottom: 1.25rem; text-transform: uppercase;
+    }
+    .tier-budget { background: rgba(168,85,247,.15); color: #c084fc; }
+    .tier-mid-range { background: rgba(59,130,246,.15); color: #60a5fa; }
+    .tier-high-performance { background: rgba(34,211,238,.15); color: #22d3ee; }
+    .tier-enthusiast { background: rgba(52,211,153,.15); color: #34d399; }
+    .tier-extreme { background: rgba(251,191,36,.15); color: #fbbf24; }
+    .tier-ultimate { background: rgba(248,113,113,.15); color: #f87171; }
+    .tier-god-tier { background: linear-gradient(135deg, rgba(168,85,247,.2), rgba(248,113,113,.15)); color: #fbbf24; }
+
+    .budget-bar {
+      height: 6px; background: rgba(148,163,184,.1); border-radius: 999px;
+      margin-bottom: 1.5rem; overflow: hidden; position: relative;
+    }
+    .budget-bar-fill {
+      height: 100%; border-radius: 999px; transition: width 1s ease;
+      background: linear-gradient(90deg, #818cf8, #c084fc);
+    }
+
+    .summary {
+      display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem; border-bottom: 1px solid rgba(148,163,184,.08);
+    }
+    .summary-item { flex: 1; min-width: 100px; }
+    .summary-label { font-size: .75rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+    .summary-value { font-size: 1.1rem; font-weight: 700; }
+    .summary-value.green { color: #34d399; }
+    .summary-value.white { color: #f1f5f9; }
+
+    .parts { display: grid; gap: .6rem; }
+    .part {
+      display: flex; align-items: center; gap: .9rem;
+      padding: .7rem .9rem; border-radius: 12px;
+      background: rgba(15,23,42,.35);
+      transition: background .2s;
+    }
+    .part:hover { background: rgba(15,23,42,.5); }
+    .part-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .part-icon.cpu { background: rgba(129,140,248,.15); }
+    .part-icon.gpu { background: rgba(52,211,153,.15); }
+    .part-icon.ram { background: rgba(251,191,36,.15); }
+    .part-icon.storage { background: rgba(59,130,246,.15); }
+    .part-info { flex: 1; min-width: 0; }
+    .part-label { font-size: .75rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .1rem; }
+    .part-name { font-size: .95rem; font-weight: 500; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 1rem; padding-top: 1rem;
+      border-top: 1px solid rgba(148,163,184,.1);
+    }
+    .total-label { font-size: .9rem; color: #94a3b8; font-weight: 500; }
+    .total-value { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .error-box {
+      text-align: center; padding: 1.5rem;
+    }
+    .error-box .error-icon { font-size: 2.5rem; margin-bottom: .5rem; display: block; }
+    .error-box .error-msg { color: #f87171; font-size: 1rem; font-weight: 500; }
+
+    .empty-state {
+      text-align: center; padding: 2.5rem 1rem;
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; display: block; opacity: .5; }
+    .empty-state .empty-title { color: #94a3b8; font-size: 1.05rem; font-weight: 500; margin-bottom: .4rem; }
+    .empty-state .empty-hint { color: #64748b; font-size: .9rem; }
+    .empty-state .empty-hint strong { color: #c084fc; font-weight: 600; }
+
+    footer { text-align: center; margin-top: 2.5rem; color: #475569; font-size: .8rem; }
+    footer a { color: #64748b; text-decoration: none; }
+    footer a:hover { color: #818cf8; }
+
+    @media (max-width: 500px) {
+      .container { padding: 0; }
+      form { flex-direction: column; }
+      .input-wrap { min-width: 100%; }
+      form button { width: 100%; justify-content: center; }
+      .summary { flex-direction: column; gap: .75rem; }
+      .logo { font-size: 1.75rem; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🖥️ PC Builder</h1>
-    <p class="sub">Enter your budget and get the best PC build for your money</p>
-
-    <form method="POST" action="/recommend">
-      <input type="number" name="budget" placeholder="Your budget in $" min="1" step="1" required autofocus>
-      <button type="submit">Build →</button>
-    </form>
-
-    {{if .Result.ErrorMessage}}
-      <div class="card"><p class="error">{{.Result.ErrorMessage}}</p></div>
-    {{else if .Result.Category}}
-      <div class="card">
-        <div class="category">{{.Result.Category}}</div>
-        <div class="budget-info">Budget: <strong>{{dollar .Result.Budget}}</strong> &nbsp;|&nbsp; Estimated total: <strong>{{dollar .Result.Total}}</strong></div>
-        <table>
-          <tr><td>CPU</td><td>{{.Result.CPU}}</td></tr>
-          <tr><td>GPU</td><td>{{.Result.GPU}}</td></tr>
-          <tr><td>RAM</td><td>{{.Result.RAM}}</td></tr>
-          <tr><td>Storage</td><td>{{.Result.Storage}}</td></tr>
-          <tr class="total"><td>Estimated Total</td><td>{{dollar .Result.Total}}</td></tr>
-        </table>
+    <header>
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        PC Builder
       </div>
-    {{else}}
-      <div class="card">
-        <p class="hint">Try a budget like <strong>$800</strong>, <strong>$1500</strong>, or <strong>$3000</strong></p>
+      <p class="subtitle">Enter your budget — get the <strong>best PC build</strong> for your money</p>
+    </header>
+
+    <div class="card">
+      <form method="POST" action="/recommend">
+        <div class="input-wrap">
+          <span class="dollar-sign">$</span>
+          <input type="number" name="budget" placeholder="Your budget" min="1" step="1" required autofocus>
+        </div>
+        <button type="submit">Find My Build →</button>
+      </form>
+
+      <div class="chips">
+        <button class="chip" onclick="this.closest('form').querySelector('[name=budget]').value='500';this.closest('form').querySelector('button').click()">$500</button>
+        <button class="chip" onclick="this.closest('form').querySelector('[name=budget]').value='800';this.closest('form').querySelector('button').click()">$800</button>
+        <button class="chip" onclick="this.closest('form').querySelector('[name=budget]').value='1200';this.closest('form').querySelector('button').click()">$1,200</button>
+        <button class="chip" onclick="this.closest('form').querySelector('[name=budget]').value='1800';this.closest('form').querySelector('button').click()">$1,800</button>
+        <button class="chip" onclick="this.closest('form').querySelector('[name=budget]').value='2500';this.closest('form').querySelector('button').click()">$2,500</button>
+        <button class="chip" onclick="this.closest('form').querySelector('[name=budget]').value='4000';this.closest('form').querySelector('button').click()">$4,000</button>
       </div>
-    {{end}}
+
+      {{if .Result.ErrorMessage}}
+        <div class="result-card error-box">
+          <span class="error-icon">⚠️</span>
+          <p class="error-msg">{{.Result.ErrorMessage}}</p>
+        </div>
+      {{else if .Result.Category}}
+        <div class="result-card">
+          <span class="tier-badge tier-{{slug .Result.Category}}">🏆 {{.Result.Category}}</span>
+
+          <div class="budget-bar">
+            <div class="budget-bar-fill" style="width: {{percent .Result.Total .Result.Budget}}%"></div>
+          </div>
+
+          <div class="summary">
+            <div class="summary-item">
+              <div class="summary-label">Your Budget</div>
+              <div class="summary-value white">{{dollar .Result.Budget}}</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">Est. Total</div>
+              <div class="summary-value green">{{dollar .Result.Total}}</div>
+            </div>
+          </div>
+
+          <div class="parts">
+            <div class="part">
+              <div class="part-icon cpu">🖥️</div>
+              <div class="part-info">
+                <div class="part-label">CPU</div>
+                <div class="part-name">{{.Result.CPU}}</div>
+              </div>
+            </div>
+            <div class="part">
+              <div class="part-icon gpu">🎮</div>
+              <div class="part-info">
+                <div class="part-label">GPU</div>
+                <div class="part-name">{{.Result.GPU}}</div>
+              </div>
+            </div>
+            <div class="part">
+              <div class="part-icon ram">💾</div>
+              <div class="part-info">
+                <div class="part-label">RAM</div>
+                <div class="part-name">{{.Result.RAM}}</div>
+              </div>
+            </div>
+            <div class="part">
+              <div class="part-icon storage">📀</div>
+              <div class="part-info">
+                <div class="part-label">Storage</div>
+                <div class="part-name">{{.Result.Storage}}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="total-row">
+            <span class="total-label">Estimated Total</span>
+            <span class="total-value">{{dollar .Result.Total}}</span>
+          </div>
+        </div>
+      {{else}}
+        <div class="empty-state">
+          <span class="empty-icon">🔍</span>
+          <p class="empty-title">Pick a budget to get started</p>
+          <p class="empty-hint">Try <strong>$800</strong>, <strong>$1,500</strong>, or <strong>$3,000</strong></p>
+        </div>
+      {{end}}
+    </div>
+
+    <footer>
+      Built with Go + ♥ &nbsp;·&nbsp; <a href="https://github.com/khaledq84ever/pc-builder" target="_blank">GitHub</a>
+    </footer>
   </div>
+
+  <script>
+    document.querySelectorAll('.chip').forEach(c => {
+      c.addEventListener('click', function(e) {
+        e.preventDefault();
+        const val = this.textContent.replace(/[$,]/g, '');
+        const input = document.querySelector('[name=budget]');
+        input.value = val;
+        this.closest('form').querySelector('button').click();
+      });
+    });
+  </script>
 </body>
 </html>{{end}}

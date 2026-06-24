@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/khaledq84ever/pc-builder/build"
@@ -23,6 +24,24 @@ var indexTmpl = template.Must(template.New("index").Funcs(template.FuncMap{
 			return "$" + strconv.FormatInt(int64(v), 10)
 		}
 		return "$" + strconv.FormatFloat(v, 'f', 2, 64)
+	},
+	"percent": func(total, budget float64) float64 {
+		if budget <= 0 {
+			return 0
+		}
+		p := total / budget * 100
+		if p > 100 {
+			return 100
+		}
+		return p
+	},
+	"slug": func(s string) string {
+		if s == "" {
+			return "budget"
+		}
+		slug := strings.ToLower(s)
+		slug = strings.ReplaceAll(slug, " ", "-")
+		return slug
 	},
 }).ParseFS(tmplFS, "templates/index.html"))
 
